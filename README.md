@@ -34,5 +34,5 @@
  然后需要 重写 两个属性：
  * Creater： 该噪声生成器的 INoiseCreater 即上面提到的 实现了 INoiseCreater 接口的 噪声算法的实例化对象。
  * NoiseName： 和该噪声生成器生成的噪声类型名，即一个 string 类型，该名称会被用于计算生成的纹理的名字后缀。
- 最后不要忘了：作为一个 EditorWindow 类，你还要自行实现 static Init() 方法，用于开启窗口。
+ * 最后不要忘了：作为一个 EditorWindow 类，你还要自行实现 static Init() 方法，用于开启窗口。
  关于 OnGUI 部分，SingleNoiseEditorWindowBase 已经帮你实现完毕，不需要自行去 重写或调用。
