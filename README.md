@@ -1,0 +1,2 @@
+# UnityCreateOrBlendNoiseTextureEditor
+一个 Unity 编辑器窗口扩展。可以快速地通过程序生成并保存噪声贴图。 或者讲不同类型的噪声值分别写入到贴图的RGBA四个通道中。
