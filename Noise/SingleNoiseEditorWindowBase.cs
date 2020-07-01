@@ -41,7 +41,7 @@ namespace NoiseCreater
             if (GUILayout.Button("生成 2D " + NoiseName))
             {
                 perlinNoise2D = NoiseGenerate.ShowNoise2D(width, height, octave, f, a, Creater);
-                tex2dPath = "Assets/Temp/" + id + + '_' + NoiseName + "_Tex2D.asset";
+                tex2dPath = "Assets/Temp/" + id + "_" + NoiseName + "_Tex2D.asset";
                 AssetDatabase.CreateAsset(perlinNoise2D, tex2dPath);
                 AssetDatabase.SaveAssets();
             }
@@ -59,7 +59,7 @@ namespace NoiseCreater
             if (GUILayout.Button("生成 3D " + NoiseName))
             {
                 perlinNoise3D = NoiseGenerate.ShowNoise3D(width, height, depth, octave, f, a, Creater);
-                tex3dPath = "Assets/Temp/" + id + '_' + NoiseName + "_Tex3D.asset";
+                tex3dPath = "Assets/Temp/" + id + "_" + NoiseName + "_Tex3D.asset";
                 AssetDatabase.CreateAsset(perlinNoise3D, tex3dPath);
                 AssetDatabase.SaveAssets();
             }
