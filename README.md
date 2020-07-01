@@ -19,14 +19,16 @@
 
 * 将新的噪声算法封装到一个类中，并让该类继承自 INoisCreater
 * 创建一个脚本，让该脚本继承自 抽象类 SingleNoiseEditorWindowBase 
-> **INoisCreater 接口：**
+
+**INoisCreater 接口：**
  该接口有三个方法：
  float Get1D(float x)
  float Get2D(float x, float y)
  float Get3D(float x, float y, float z)
  分别对应着 噪声算法在 一维、二维、三维 坐标下 噪声值的计算
- 注意：噪声算法的返回值应当是 [0, 1] 的范围值！
- **SingleNoiseEditorWindowBase 抽象类：**
+ >注意：噪声算法的返回值应当是 [0, 1] 的范围值！
+ 
+**SingleNoiseEditorWindowBase 抽象类：**
  该抽象类作为 噪声纹理生成器 的基类
  你只需要让 新的噪声纹理生成器 继承自该类
  然后需要 重写 两个属性：
