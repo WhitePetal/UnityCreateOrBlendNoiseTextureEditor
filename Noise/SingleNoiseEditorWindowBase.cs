@@ -13,6 +13,8 @@ namespace NoiseCreater
         protected int width;
         protected int height;
         protected int depth;
+        protected Vector3 offsets;
+
         protected Texture2D perlinNoise2D;
         protected Texture3D perlinNoise3D;
         protected string tex3dPath;
@@ -34,13 +36,15 @@ namespace NoiseCreater
             width = EditorGUILayout.IntField("宽度", width);
             height = EditorGUILayout.IntField("高度", height);
             depth = EditorGUILayout.IntField("厚度", depth);
+            offsets = EditorGUILayout.Vector3Field("偏移向量", offsets);
+
             a = EditorGUILayout.Slider("a", a, 0, 3);
             f = EditorGUILayout.Slider("f", f, 0, 2);
             octave = EditorGUILayout.IntSlider("octave", octave, 1, 10);
 
             if (GUILayout.Button("生成 2D " + NoiseName))
             {
-                perlinNoise2D = NoiseGenerate.ShowNoise2D(width, height, octave, f, a, Creater);
+                perlinNoise2D = NoiseGenerate.ShowNoise2D(width, height, offsets ,octave, f, a, Creater);
                 tex2dPath = "Assets/Temp/" + id + "_" + NoiseName + "_Tex2D.asset";
                 AssetDatabase.CreateAsset(perlinNoise2D, tex2dPath);
                 AssetDatabase.SaveAssets();
@@ -58,7 +62,7 @@ namespace NoiseCreater
 
             if (GUILayout.Button("生成 3D " + NoiseName))
             {
-                perlinNoise3D = NoiseGenerate.ShowNoise3D(width, height, depth, octave, f, a, Creater);
+                perlinNoise3D = NoiseGenerate.ShowNoise3D(width, height, depth, offsets ,octave, f, a, Creater);
                 tex3dPath = "Assets/Temp/" + id + "_" + NoiseName + "_Tex3D.asset";
                 AssetDatabase.CreateAsset(perlinNoise3D, tex3dPath);
                 AssetDatabase.SaveAssets();

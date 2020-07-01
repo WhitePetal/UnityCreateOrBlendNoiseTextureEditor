@@ -51,6 +51,11 @@ namespace NoiseCreater
         private float bF;
         private float aF;
 
+        private Vector3 rOffsets;
+        private Vector3 gOffsets;
+        private Vector3 bOffsets;
+        private Vector3 aOffsets;
+
         private Texture2D tex2D;
         private Texture3D tex3D;
         private string tex2dPath;
@@ -104,6 +109,11 @@ namespace NoiseCreater
             if(openB)bF = EditorGUILayout.Slider("B通道 f：", bF, 0, 3);
             if(openA) aF = EditorGUILayout.Slider("A通道 f：", aF, 0, 3);
 
+            if (openR) rOffsets = EditorGUILayout.Vector3Field("R通道 偏移：", rOffsets);
+            if (openG) gOffsets = EditorGUILayout.Vector3Field("G通道 偏移：", gOffsets);
+            if (openB) bOffsets = EditorGUILayout.Vector3Field("B通道 偏移：", bOffsets);
+            if (openA) aOffsets = EditorGUILayout.Vector3Field("A通道 偏移：", aOffsets);
+
 
             if (GUILayout.Button("生成 2D Blend Noise 纹理"))
             {
@@ -135,19 +145,19 @@ namespace NoiseCreater
             Texture3D tex = new Texture3D(width, height, depth, TextureFormat.ARGB32, false);
             tex.Apply();
 
-            BlendPass3D(tex, rCreater, new Color(1, 0, 0, 0), width, height, depth, rOctave, rA, rF);
-            BlendPass3D(tex, gCreater, new Color(0, 1, 0, 0), width, height, depth, gOctave, gA, gF);
-            BlendPass3D(tex, bCreater, new Color(0, 0, 1, 0), width, height, depth, bOctave, bA, bF);
-            BlendPass3D(tex, aCreater, new Color(0, 0, 0, 1), width, height, depth, aOctave, aA, aF);
+            BlendPass3D(tex, rCreater, new Color(1, 0, 0, 0), width, height, depth, rOffsets, rOctave, rA, rF);
+            BlendPass3D(tex, gCreater, new Color(0, 1, 0, 0), width, height, depth, gOffsets, gOctave, gA, gF);
+            BlendPass3D(tex, bCreater, new Color(0, 0, 1, 0), width, height, depth, bOffsets, bOctave, bA, bF);
+            BlendPass3D(tex, aCreater, new Color(0, 0, 0, 1), width, height, depth, aOffsets, aOctave, aA, aF);
 
             tex.Apply();
             return tex;
         }
-        private void BlendPass3D(Texture3D tex, INoisCreater creater, Color mask, int width, int height, int depth , int octave, float a, float f)
+        private void BlendPass3D(Texture3D tex, INoisCreater creater, Color mask, int width, int height, int depth , Vector3 offset ,int octave, float a, float f)
         {
             if (creater != null)
             {
-                Texture3D targetTex = NoiseGenerate.ShowNoise3D(width, height,depth , octave, f, a, creater);
+                Texture3D targetTex = NoiseGenerate.ShowNoise3D(width, height,depth , offset, octave, f, a, creater);
                 BlendPassColorTexture3D(tex, targetTex, mask);
             }
         }
@@ -181,20 +191,20 @@ namespace NoiseCreater
             Texture2D tex = new Texture2D(width, height);
             tex.Apply();
 
-            BlendPass2D(tex, rCreater, new Color(1, 0, 0, 0), width, height, rOctave, rA, rF);
-            BlendPass2D(tex, gCreater, new Color(0, 1, 0, 0), width, height, gOctave, gA, gF);
-            BlendPass2D(tex, bCreater, new Color(0, 0, 1, 0), width, height, bOctave, bA, bF);
-            BlendPass2D(tex, aCreater, new Color(0, 0, 0, 1), width, height, aOctave, aA, aF);
+            BlendPass2D(tex, rCreater, new Color(1, 0, 0, 0), width, height, rOffsets ,rOctave, rA, rF);
+            BlendPass2D(tex, gCreater, new Color(0, 1, 0, 0), width, height, gOffsets,gOctave, gA, gF);
+            BlendPass2D(tex, bCreater, new Color(0, 0, 1, 0), width, height, bOffsets,bOctave, bA, bF);
+            BlendPass2D(tex, aCreater, new Color(0, 0, 0, 1), width, height, aOffsets,aOctave, aA, aF);
 
             tex.Apply();
             return tex;
         }
 
-        private void BlendPass2D(Texture2D tex ,INoisCreater creater, Color mask, int width, int height, int octave, float a, float f)
+        private void BlendPass2D(Texture2D tex ,INoisCreater creater, Color mask, int width, int height, Vector3 offset ,int octave, float a, float f)
         {
             if (creater != null)
             {
-                Texture2D targetTex = NoiseGenerate.ShowNoise2D(width, height, octave, f, a, creater);
+                Texture2D targetTex = NoiseGenerate.ShowNoise2D(width, height, offset, octave, f, a, creater);
                 BlendPassColorTexture2D(tex, targetTex, mask);
             }
         }

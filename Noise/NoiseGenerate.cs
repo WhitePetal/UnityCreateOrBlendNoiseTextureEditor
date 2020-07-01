@@ -6,7 +6,7 @@ namespace NoiseCreater
 {
     public class NoiseGenerate
     {
-        public static Texture2D ShowNoise2D(int width, int height, int octave, float f, float a, INoisCreater creater)
+        public static Texture2D ShowNoise2D(int width, int height, Vector3 offset, int octave, float f, float a, INoisCreater creater)
         {
             Texture2D tex = new Texture2D(width, height);
             for (int x = 0; x < width; x++)
@@ -21,7 +21,7 @@ namespace NoiseCreater
                         frequency *= f;
                         ambitient *= a;
                     }
-                    float noise = creater.Get2D((float)x * frequency, (float)y * frequency) * ambitient;
+                    float noise = creater.Get2D(((float)x + offset.x) * frequency, ((float)y + offset.y) * frequency) * ambitient;
                     tex.SetPixel(x, y, new Color(0.5f * noise, 0.5f * noise, 0.5f * noise));
                 }
             }
@@ -31,7 +31,7 @@ namespace NoiseCreater
             return tex;
         }
 
-        public static Texture3D ShowNoise3D(int width, int height, int depth, int octave, float f, float a, INoisCreater creater)
+        public static Texture3D ShowNoise3D(int width, int height, int depth, Vector3 offset, int octave, float f, float a, INoisCreater creater)
         {
             Texture3D tex = new Texture3D(width, height, depth, TextureFormat.RGBA32, false);
             for (int x = 0; x < width; x++)
@@ -48,7 +48,7 @@ namespace NoiseCreater
                             frequency *= f;
                             ambitient *= a;
                         }
-                        float noise = creater.Get3D((float)x * frequency, (float)y * frequency, (float)z * frequency) * ambitient;
+                        float noise = creater.Get3D(((float)x + offset.x) * frequency, ((float)y + offset.y) * frequency, ((float)z + offset.z) * frequency) * ambitient;
                         tex.SetPixel(x, y, z, new Color(0.5f * noise, 0.5f * noise, 0.5f * noise));
                     }
                 }
