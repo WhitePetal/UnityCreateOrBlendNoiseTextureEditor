@@ -1,5 +1,6 @@
 # UnityCreateOrBlendNoiseTextureEditor
 # Unity 程序生成或混合噪声纹理窗口编辑器
+![Alet text](https://github.com/WhitePetal/UnityCreateOrBlendNoiseTextureEditor/blob/master/1.png)
 ## 功能 ：
 * 生成并保存噪声贴图。 目前可生成 PerlinNoise(柏林噪声) 和 WorelyNoise(沃利噪声) 这两种噪声的 2D 和 3D 贴图。
 * 生成并保存“混合纹理”，可以生成这样一种 2D 或 3D 贴图，该贴图的 RGBA 四个通道，可以分别存储不同类型的噪声采样。
