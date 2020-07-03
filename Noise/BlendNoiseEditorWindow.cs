@@ -21,18 +21,24 @@ namespace NoiseCreater
             {NoiseType.Value_Noise, new ValueNoiseCreater() }
         };
 
+        private Vector2 scrollPos = Vector2.zero;
+
         private bool seamlessAsyncTex3D;
 
         private string id;
         private int width;
         private int height;
-        private int depth;
-        private bool isSeamless;
+        private int depth; 
 
         private INoisCreater rCreater;
         private INoisCreater gCreater;
         private INoisCreater bCreater;
         private INoisCreater aCreater;
+
+        private bool rIsSeamless;
+        private bool gIsSeamless;
+        private bool bIsSeamless;
+        private bool aIsSeamless;
 
         private bool openR;
         private bool openG;
@@ -87,17 +93,12 @@ namespace NoiseCreater
 
         private void OnGUI()
         {
-            EditorGUILayout.BeginVertical();
-
+            scrollPos = EditorGUILayout.BeginScrollView(scrollPos);
             id = EditorGUILayout.TextField("纹理ID", id);
 
             width = EditorGUILayout.IntField("宽", width);
             height = EditorGUILayout.IntField("高", height);
             depth = EditorGUILayout.IntField("厚", depth);
-
-            EditorGUILayout.Space(20);
-            isSeamless = EditorGUILayout.Toggle("无缝图", isSeamless);
-            EditorGUILayout.Space(20);
 
             openR = EditorGUILayout.Toggle("开启R通道", openR);
             openG = EditorGUILayout.Toggle("开启G通道", openG);
@@ -109,6 +110,7 @@ namespace NoiseCreater
                 EditorGUILayout.Space(10);
                 EditorGUILayout.LabelField("-------------------------------------------------");
                 rType = (NoiseType)EditorGUILayout.EnumPopup("R通道噪声类型：", rType);
+                rIsSeamless = EditorGUILayout.Toggle("无缝图", rIsSeamless);
                 rOctave = EditorGUILayout.IntSlider("R通道 octave：", rOctave ,1, 10);
                 rA = EditorGUILayout.Slider("R通道 a：", rA, 0, 5);
                 rF = EditorGUILayout.Slider("R通道 f：", rF, 0, 3);
@@ -118,6 +120,7 @@ namespace NoiseCreater
             if (openG)
             {
                 gType = (NoiseType)EditorGUILayout.EnumPopup("G通道噪声类型：", gType);
+                gIsSeamless = EditorGUILayout.Toggle("无缝图", gIsSeamless);
                 gOctave = EditorGUILayout.IntSlider("G通道 octave：", gOctave, 1, 10);
                 gA = EditorGUILayout.Slider("G通道 a：", gA, 0, 5);
                 gF = EditorGUILayout.Slider("G通道 f：", gF, 0, 3);
@@ -127,6 +130,7 @@ namespace NoiseCreater
             if (openB)
             {
                 bType = (NoiseType)EditorGUILayout.EnumPopup("B通道噪声类型：", bType);
+                bIsSeamless = EditorGUILayout.Toggle("无缝图", bIsSeamless);
                 bOctave = EditorGUILayout.IntSlider("B通道 octave：", bOctave, 1, 10);
                 bA = EditorGUILayout.Slider("B通道 a：", bA, 0, 5);
                 bF = EditorGUILayout.Slider("B通道 f：", bF, 0, 3);
@@ -136,6 +140,7 @@ namespace NoiseCreater
             if (openA)
             {
                 aType = (NoiseType)EditorGUILayout.EnumPopup("A通道噪声类型：", aType);
+                aIsSeamless = EditorGUILayout.Toggle("无缝图", aIsSeamless);
                 aOctave = EditorGUILayout.IntSlider("A通道 octave：", aOctave, 1, 10);
                 aA = EditorGUILayout.Slider("A通道 a：", aA, 0, 5);
                 aF = EditorGUILayout.Slider("A通道 f：", aF, 0, 3);
@@ -179,7 +184,7 @@ namespace NoiseCreater
             EditorGUILayout.LabelField("3D 纹理路径：" + tex3dPath);
             EditorGUILayout.ObjectField("3D 纹理预览：" , tex3D, typeof(Texture), false);
 
-            EditorGUILayout.EndVertical();
+            EditorGUILayout.EndScrollView();
         }
 
         private Texture3D ShowBlendNoise3D()
@@ -187,15 +192,15 @@ namespace NoiseCreater
             Texture3D tex = new Texture3D(width, height, depth, TextureFormat.ARGB32, false);
             tex.Apply();
 
-            BlendPass3D(tex, rCreater, new Color(1, 0, 0, 0), width, height, depth, rOffsets, rOctave, rA, rF);
-            BlendPass3D(tex, gCreater, new Color(0, 1, 0, 0), width, height, depth, gOffsets, gOctave, gA, gF);
-            BlendPass3D(tex, bCreater, new Color(0, 0, 1, 0), width, height, depth, bOffsets, bOctave, bA, bF);
-            BlendPass3D(tex, aCreater, new Color(0, 0, 0, 1), width, height, depth, aOffsets, aOctave, aA, aF);
+            BlendPass3D(tex, rCreater, new Color(1, 0, 0, 0), width, height, depth, rOffsets, rOctave, rA, rF, rIsSeamless);
+            BlendPass3D(tex, gCreater, new Color(0, 1, 0, 0), width, height, depth, gOffsets, gOctave, gA, gF, gIsSeamless);
+            BlendPass3D(tex, bCreater, new Color(0, 0, 1, 0), width, height, depth, bOffsets, bOctave, bA, bF, bIsSeamless);
+            BlendPass3D(tex, aCreater, new Color(0, 0, 0, 1), width, height, depth, aOffsets, aOctave, aA, aF, aIsSeamless);
 
             tex.Apply();
             return tex;
         }
-        private void BlendPass3D(Texture3D tex, INoisCreater creater, Color mask, int width, int height, int depth , Vector3 offset ,int octave, float a, float f)
+        private void BlendPass3D(Texture3D tex, INoisCreater creater, Color mask, int width, int height, int depth , Vector3 offset ,int octave, float a, float f, bool isSeamless)
         {
             if (creater != null)
             {
@@ -246,16 +251,16 @@ namespace NoiseCreater
             Texture2D tex = new Texture2D(width, height);
             tex.Apply();
 
-            BlendPass2D(tex, rCreater, new Color(1, 0, 0, 0), width, height, rOffsets ,rOctave, rA, rF);
-            BlendPass2D(tex, gCreater, new Color(0, 1, 0, 0), width, height, gOffsets,gOctave, gA, gF);
-            BlendPass2D(tex, bCreater, new Color(0, 0, 1, 0), width, height, bOffsets,bOctave, bA, bF);
-            BlendPass2D(tex, aCreater, new Color(0, 0, 0, 1), width, height, aOffsets,aOctave, aA, aF);
+            BlendPass2D(tex, rCreater, new Color(1, 0, 0, 0), width, height, rOffsets ,rOctave, rA, rF, rIsSeamless);
+            BlendPass2D(tex, gCreater, new Color(0, 1, 0, 0), width, height, gOffsets,gOctave, gA, gF, gIsSeamless);
+            BlendPass2D(tex, bCreater, new Color(0, 0, 1, 0), width, height, bOffsets,bOctave, bA, bF, bIsSeamless);
+            BlendPass2D(tex, aCreater, new Color(0, 0, 0, 1), width, height, aOffsets,aOctave, aA, aF, aIsSeamless);
 
             tex.Apply();
             return tex;
         }
 
-        private void BlendPass2D(Texture2D tex ,INoisCreater creater, Color mask, int width, int height, Vector3 offset ,int octave, float a, float f)
+        private void BlendPass2D(Texture2D tex ,INoisCreater creater, Color mask, int width, int height, Vector3 offset ,int octave, float a, float f, bool isSeamless)
         {
             if (creater != null)
             {
