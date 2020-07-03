@@ -45,7 +45,7 @@
  
  * 20.7.3：添加了更多类型的噪声。 现在包括：PerlinNoise、WorelyNoise、SimplexNoise、RandomNoise、ValueNoise。
  > * 这次更新存在问题：
- > * 部分噪声的生成算法存在一定问题。
+ > * 部分噪声的生成算法存在一定问题。（未解决）
  
  ## 后续计划：
  * 优化无缝纹理生成方案。
