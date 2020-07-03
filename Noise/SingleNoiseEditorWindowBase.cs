@@ -14,9 +14,10 @@ namespace NoiseCreater
         protected int height;
         protected int depth;
         protected Vector3 offsets;
+        protected bool isSeamless;
 
-        protected Texture2D perlinNoise2D;
-        protected Texture3D perlinNoise3D;
+        protected Texture2D noise2D;
+        protected Texture3D noise3D;
         protected string tex3dPath;
         protected string tex2dPath;
 
@@ -38,23 +39,29 @@ namespace NoiseCreater
             depth = EditorGUILayout.IntField("厚度", depth);
             offsets = EditorGUILayout.Vector3Field("偏移向量", offsets);
 
+            EditorGUILayout.Space(10);
+            EditorGUILayout.LabelField("无缝纹理生成采用升维采样法，运行较耗时");
+            isSeamless = EditorGUILayout.Toggle("无缝纹理", isSeamless);
+            EditorGUILayout.Space(10);
+
             a = EditorGUILayout.Slider("a", a, 0, 3);
             f = EditorGUILayout.Slider("f", f, 0, 2);
             octave = EditorGUILayout.IntSlider("octave", octave, 1, 10);
 
             if (GUILayout.Button("生成 2D " + NoiseName))
             {
-                perlinNoise2D = NoiseGenerate.ShowNoise2D(width, height, offsets ,octave, f, a, Creater);
+                if (!isSeamless) noise2D = NoiseGenerate.ShowNoise2D(width, height, offsets, octave, f, a, Creater);
+                else noise2D = NoiseGenerate.ShowNoise2DSeamless(width, height, offsets, octave, f, a, Creater);
                 tex2dPath = "Assets/Temp/" + id + "_" + NoiseName + "_Tex2D.asset";
-                AssetDatabase.CreateAsset(perlinNoise2D, tex2dPath);
+                AssetDatabase.CreateAsset(noise2D, tex2dPath);
                 AssetDatabase.SaveAssets();
             }
 
-            if (perlinNoise2D != null)
+            if (noise2D != null)
             {
-                GUI.Label(new Rect(0, 200, 800, 20), "2D纹理已生成， 路径为：" + tex2dPath);
-                GUI.Label(new Rect(0, 225, 800, 20), "2D纹理预览图：");
-                GUI.DrawTexture(new Rect(0, 250, perlinNoise2D.width, perlinNoise2D.height), perlinNoise2D); ;
+                GUI.Label(new Rect(0, 300, 800, 20), "2D纹理已生成， 路径为：" + tex2dPath);
+                GUI.Label(new Rect(0, 325, 800, 20), "2D纹理预览图：");
+                GUI.DrawTexture(new Rect(0, 350, noise2D.width, noise2D.height), noise2D); ;
             }
 
 
@@ -62,16 +69,18 @@ namespace NoiseCreater
 
             if (GUILayout.Button("生成 3D " + NoiseName))
             {
-                perlinNoise3D = NoiseGenerate.ShowNoise3D(width, height, depth, offsets ,octave, f, a, Creater);
+                if (!isSeamless) noise3D = NoiseGenerate.ShowNoise3D(width, height, depth, offsets, octave, f, a, Creater);
+                else noise3D = NoiseGenerate.ShowNoise3DSeamless(width, height, depth, offsets, octave, f, a, Creater);
                 tex3dPath = "Assets/Temp/" + id + "_" + NoiseName + "_Tex3D.asset";
-                AssetDatabase.CreateAsset(perlinNoise3D, tex3dPath);
+                AssetDatabase.CreateAsset(noise3D, tex3dPath);
                 AssetDatabase.SaveAssets();
             }
-            if (perlinNoise3D != null)
+            if (noise3D != null)
             {
-                GUI.Label(new Rect(0, 400, 800, 20), "3D纹理已生成， 路径为：" + tex3dPath);
-                GUI.Label(new Rect(0, 425, 800, 20), "3D纹理预览图（3D纹理的预览图会有问题，不代表真实效果，可以2D纹理效果为参考）");
-                GUI.DrawTexture(new Rect(0, 450, perlinNoise3D.width, perlinNoise3D.height), perlinNoise3D);
+                float yoffset = noise2D == null ? 0 : noise2D.height;
+                GUI.Label(new Rect(0, 400 + yoffset, 800, 20), "3D纹理已生成， 路径为：" + tex3dPath);
+                GUI.Label(new Rect(0, 425 + yoffset, 800, 20), "3D纹理预览图（3D纹理的预览图会有问题，不代表真实效果，可以2D纹理效果为参考）");
+                GUI.DrawTexture(new Rect(0, 450 + yoffset, noise3D.width, noise3D.height), noise3D);
             }
 
             GUILayout.EndVertical();

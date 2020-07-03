@@ -22,11 +22,8 @@ namespace NoiseCreater
 
         public float Get3D(float x, float y, float z)
         {
-            float nois1 = Mathf.PerlinNoise(x, y);
-            float nois2 = Mathf.PerlinNoise(x, z);
-            float nois3 = Mathf.PerlinNoise(y, z);
+            float color = Mathf.PerlinNoise(x * z, y * z);
 
-            float color = (nois1 + nois2 + nois3) / 3f;
             color = Mathf.Clamp01(color);
             return color;
         }

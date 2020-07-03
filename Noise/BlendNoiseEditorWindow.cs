@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
+using System.Threading.Tasks;
 
 namespace NoiseCreater
 {
@@ -16,10 +17,13 @@ namespace NoiseCreater
             {NoiseType.Worely, new WorleyNoiseCreater() }
         };
 
+        private bool seamlessAsyncTex3D;
+
         private string id;
         private int width;
         private int height;
         private int depth;
+        private bool isSeamless;
 
         private INoisCreater rCreater;
         private INoisCreater gCreater;
@@ -79,40 +83,58 @@ namespace NoiseCreater
             height = EditorGUILayout.IntField("高", height);
             depth = EditorGUILayout.IntField("厚", depth);
 
+            EditorGUILayout.Space(20);
+            isSeamless = EditorGUILayout.Toggle("无缝图", isSeamless);
+            EditorGUILayout.Space(20);
+
             openR = EditorGUILayout.Toggle("开启R通道", openR);
             openG = EditorGUILayout.Toggle("开启G通道", openG);
             openB = EditorGUILayout.Toggle("开启B通道", openB);
             openA = EditorGUILayout.Toggle("开启A通道", openA);
 
-            if (openR) rType = (NoiseType)EditorGUILayout.EnumFlagsField("R通道噪声类型：", rType);
-            if (openG) gType = (NoiseType)EditorGUILayout.EnumFlagsField("G通道噪声类型：", gType);
-            if (openB) bType = (NoiseType)EditorGUILayout.EnumFlagsField("B通道噪声类型：", bType);
-            if (openA) aType = (NoiseType)EditorGUILayout.EnumFlagsField("A通道噪声类型：", aType);
+            if (openR)
+            {
+                EditorGUILayout.Space(10);
+                EditorGUILayout.LabelField("-------------------------------------------------");
+                rType = (NoiseType)EditorGUILayout.EnumPopup("R通道噪声类型：", rType);
+                rOctave = EditorGUILayout.IntSlider("R通道 octave：", rOctave ,1, 10);
+                rA = EditorGUILayout.Slider("R通道 a：", rA, 0, 5);
+                rF = EditorGUILayout.Slider("R通道 f：", rF, 0, 3);
+                rOffsets = EditorGUILayout.Vector3Field("R通道 偏移：", rOffsets);
+                EditorGUILayout.LabelField("-------------------------------------------------");
+            }
+            if (openG)
+            {
+                gType = (NoiseType)EditorGUILayout.EnumPopup("G通道噪声类型：", gType);
+                gOctave = EditorGUILayout.IntSlider("G通道 octave：", gOctave, 1, 10);
+                gA = EditorGUILayout.Slider("G通道 a：", gA, 0, 5);
+                gF = EditorGUILayout.Slider("G通道 f：", gF, 0, 3);
+                gOffsets = EditorGUILayout.Vector3Field("G通道 偏移：", gOffsets);
+                EditorGUILayout.LabelField("-------------------------------------------------");
+            }
+            if (openB)
+            {
+                bType = (NoiseType)EditorGUILayout.EnumPopup("B通道噪声类型：", bType);
+                bOctave = EditorGUILayout.IntSlider("B通道 octave：", bOctave, 1, 10);
+                bA = EditorGUILayout.Slider("B通道 a：", bA, 0, 5);
+                bF = EditorGUILayout.Slider("B通道 f：", bF, 0, 3);
+                bOffsets = EditorGUILayout.Vector3Field("B通道 偏移：", bOffsets);
+                EditorGUILayout.LabelField("-------------------------------------------------");
+            }
+            if (openA)
+            {
+                aType = (NoiseType)EditorGUILayout.EnumPopup("A通道噪声类型：", aType);
+                aOctave = EditorGUILayout.IntSlider("A通道 octave：", aOctave, 1, 10);
+                aA = EditorGUILayout.Slider("A通道 a：", aA, 0, 5);
+                aF = EditorGUILayout.Slider("A通道 f：", aF, 0, 3);
+                aOffsets = EditorGUILayout.Vector3Field("A通道 偏移：", aOffsets);
+                EditorGUILayout.LabelField("-------------------------------------------------");
+            }
 
             rCreater = createrDic[rType];
             gCreater = createrDic[gType];
             bCreater = createrDic[bType];
             aCreater = createrDic[aType];
-
-            if(openR) rOctave = EditorGUILayout.IntSlider("R通道 octave：", rOctave ,1, 10);
-            if (openG) gOctave = EditorGUILayout.IntSlider("G通道 octave：", gOctave, 1, 10);
-            if (openB) bOctave = EditorGUILayout.IntSlider("B通道 octave：", bOctave, 1, 10);
-            if(openA)aOctave = EditorGUILayout.IntSlider("A通道 octave：", aOctave, 1, 10);
-
-            if(openR)rA = EditorGUILayout.Slider("R通道 a：", rA, 0, 5);
-            if(openG)gA = EditorGUILayout.Slider("G通道 a：", gA, 0, 5);
-            if(openB)bA = EditorGUILayout.Slider("B通道 a：", bA, 0, 5);
-            if(openA)aA = EditorGUILayout.Slider("A通道 a：", aA, 0, 5);
-
-            if(openR)rF = EditorGUILayout.Slider("R通道 f：", rF, 0, 3);
-            if(openG)gF = EditorGUILayout.Slider("G通道 f：", gF, 0, 3);
-            if(openB)bF = EditorGUILayout.Slider("B通道 f：", bF, 0, 3);
-            if(openA) aF = EditorGUILayout.Slider("A通道 f：", aF, 0, 3);
-
-            if (openR) rOffsets = EditorGUILayout.Vector3Field("R通道 偏移：", rOffsets);
-            if (openG) gOffsets = EditorGUILayout.Vector3Field("G通道 偏移：", gOffsets);
-            if (openB) bOffsets = EditorGUILayout.Vector3Field("B通道 偏移：", bOffsets);
-            if (openA) aOffsets = EditorGUILayout.Vector3Field("A通道 偏移：", aOffsets);
 
 
             if (GUILayout.Button("生成 2D Blend Noise 纹理"))
@@ -130,6 +152,14 @@ namespace NoiseCreater
                 AssetDatabase.CreateAsset(tex3D, tex3dPath);
                 AssetDatabase.SaveAssets();
             }
+
+            //if(seamlessAsyncTex3D)
+            //{
+            //    string path = "Assets/Temp/" + id + "_Async_BlendTex3D.asset";
+            //    AssetDatabase.CreateAsset(tex3D, path);
+            //    AssetDatabase.SaveAssets();
+            //    seamlessAsyncTex3D = false;
+            //}
 
             EditorGUILayout.LabelField("2D 纹理路径：" + tex2dPath);
             EditorGUILayout.ObjectField("2D 纹理预览：", tex2D, typeof(Texture), false);
@@ -157,7 +187,20 @@ namespace NoiseCreater
         {
             if (creater != null)
             {
-                Texture3D targetTex = NoiseGenerate.ShowNoise3D(width, height,depth , offset, octave, f, a, creater);
+                Texture3D targetTex = null;
+                if (!isSeamless)
+                {
+                    targetTex = NoiseGenerate.ShowNoise3D(width, height, depth, offset, octave, f, a, creater);
+                    //BlendPassColorTexture3D(tex, targetTex, mask);
+                }
+                else
+                {
+                    targetTex = NoiseGenerate.ShowNoise3DSeamless(width, height, depth, offset, octave, f, a, creater);
+                    //NoiseGenerate.ShowNoise3DSeamlessAsync(width, height, depth, offset, octave, f, a, creater, (t) => {
+                    //    BlendPassColorTexture3D(tex, t, mask);
+                    //    seamlessAsyncTex3D = true;
+                    //});
+                }
                 BlendPassColorTexture3D(tex, targetTex, mask);
             }
         }
@@ -204,7 +247,9 @@ namespace NoiseCreater
         {
             if (creater != null)
             {
-                Texture2D targetTex = NoiseGenerate.ShowNoise2D(width, height, offset, octave, f, a, creater);
+                Texture2D targetTex = null;
+                if (!isSeamless) targetTex = NoiseGenerate.ShowNoise2D(width, height, offset, octave, f, a, creater);
+                else targetTex = NoiseGenerate.ShowNoise2DSeamless(width, height, offset, octave, f, a, creater);
                 BlendPassColorTexture2D(tex, targetTex, mask);
             }
         }
