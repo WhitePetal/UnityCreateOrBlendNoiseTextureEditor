@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 using System.Threading.Tasks;
+using System;
 
 namespace NoiseCreater
 {
@@ -13,8 +14,11 @@ namespace NoiseCreater
         private static Dictionary<NoiseType, INoisCreater> createrDic = new Dictionary<NoiseType, INoisCreater>()
         {
             {NoiseType.None, null },
-            {NoiseType.Perlin, new PerlinNoiseCreater() },
-            {NoiseType.Worely, new WorleyNoiseCreater() }
+            {NoiseType.Perlin_Noise, new PerlinNoiseCreater() },
+            {NoiseType.Worely_Noise, new WorleyNoiseCreater() },
+            {NoiseType.Random_Noise, new RandomNoiseCreater() },
+            {NoiseType.Simplex_Noise, new SimplexNoiseCreater() },
+            {NoiseType.Value_Noise, new ValueNoiseCreater() }
         };
 
         private bool seamlessAsyncTex3D;
@@ -71,6 +75,14 @@ namespace NoiseCreater
         static void Init()
         {
             window = GetWindow(typeof(BlendNoiseEditorWindow));
+            for(int i = 1; i < (int)NoiseType.Count; i++)
+            {
+                if (!createrDic.ContainsKey((NoiseType)i))
+                {
+                    Debug.LogWarning("存在一个 Noise Creater 未被注册，请前往 BlendNoiseEditorWindow 脚本，在 createrDic 中进行注册\n" +
+                        "未被注册的 Noise 类型：" + (NoiseType)i);
+                }
+            }
         }
 
         private void OnGUI()
@@ -273,13 +285,6 @@ namespace NoiseCreater
 
             cur.Apply();
         }
-    }
-
-    public enum NoiseType
-    {
-        None,
-        Perlin,
-        Worely
     }
 }
 
